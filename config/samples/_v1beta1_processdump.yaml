@@ -1,0 +1,7 @@
+apiVersion: diagnostics.office.com/v1beta1
+kind: ProcessDump
+metadata:
+  name: processdump-sample
+spec:
+  # Add fields here
+  foo: bar

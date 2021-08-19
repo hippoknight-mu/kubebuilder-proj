@@ -1,0 +1,15 @@
+domain: diagnostics.office.com
+layout:
+- go.kubebuilder.io/v3
+projectName: pd-proj
+repo: pd-proj
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: diagnostics.office.com
+  kind: ProcessDump
+  path: pd-proj/api/v1beta1
+  version: v1beta1
+version: "3"
