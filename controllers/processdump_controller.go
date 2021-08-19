@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -33,10 +34,6 @@ type ProcessDumpReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=diagnostics.office.com,resources=processdumps,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=diagnostics.office.com,resources=processdumps/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=diagnostics.office.com,resources=processdumps/finalizers,verbs=update
-
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
 // TODO(user): Modify the Reconcile function to compare the state specified by
@@ -49,7 +46,14 @@ type ProcessDumpReconciler struct {
 func (r *ProcessDumpReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
+	fmt.Printf("%+v\n%+v\n", ctx, req)
+	fmt.Printf("xxxxxxxxxxxxxxx %+v\n", req.NamespacedName)
+	var obj diagnosticsofficecomv1beta1.ProcessDump
+	err := r.Client.Get(ctx, req.NamespacedName, &obj)
+	fmt.Printf("%+v\n", obj)
+	fmt.Printf("%+v\n", err)
 	// your logic here
+	ctrl.Result{}
 
 	return ctrl.Result{}, nil
 }
