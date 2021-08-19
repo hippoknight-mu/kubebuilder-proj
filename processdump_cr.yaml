@@ -1,0 +1,9 @@
+apiVersion: diagnostics.office.com/v1beta1
+kind: ProcessDump
+metadata:
+  name: dump-with-pid
+spec:
+  podName: ic3-data-usagerecordloader-deployment-67cf9b6464-j6lmx
+  processName: ""
+  processID: 32152
+  containerName: ""

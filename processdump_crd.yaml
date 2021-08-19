@@ -1,0 +1,39 @@
+
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: processdumps.diagnostics.office.com
+spec:
+  group: diagnostics.office.com
+  versions: 
+    - name: v1beta1
+      served: true
+      storage: true
+      schema:
+        # schema used for validation
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                podName:
+                  type: string
+                containerName:
+                  type: string
+                processID:
+                  type: integer
+                processName:
+                  type: string
+            # UpdateStatus func needs this section
+            status:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+      subresources:
+        # status enables the status subresource.
+        status: {}
+  names:
+    kind: ProcessDump
+    plural: processdumps
+  scope: Namespaced
+  
