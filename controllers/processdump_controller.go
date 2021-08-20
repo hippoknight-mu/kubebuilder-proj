@@ -150,7 +150,7 @@ func (r *ProcessDumpReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 	// Finally, we update the status block of the ProcessDump resource to reflect the
 	// current state of the world
-	err = r.updateProcessDumpStatus(&procdump, &workerpod)
+	err = r.updateProcessDumpStatus(req, &workerpod)
 	if err != nil {
 		klog.Warning("processdump updatestatus failed")
 		klog.Error(err.Error())
@@ -168,16 +168,18 @@ func (r *ProcessDumpReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 // Updating workerpod name in processdump status
-func (r *ProcessDumpReconciler) updateProcessDumpStatus(procdump *diagnosticsofficecomv1beta1.ProcessDump, workerPod *corev1.Pod) error {
+func (r *ProcessDumpReconciler) updateProcessDumpStatus(req ctrl.Request, workerPod *corev1.Pod) error {
 	var err error
 	var pd diagnosticsofficecomv1beta1.ProcessDump
-	err = r.Get(context.Background(), types.NamespacedName{Namespace: procdump.Namespace, Name: procdump.Name}, &pd)
-	klog.Infof("%+v", pd)
-	klog.Error(err.Error())
+	if err = r.Get(context.Background(), req.NamespacedName, &pd); err != nil {
+		klog.Error(err.Error())
+	}
+
 	pd.Status.WorkerPodName = workerPod.Name
 	if err = r.Status().Update(context.Background(), &pd); err != nil {
 		klog.Error(err.Error())
 	}
+
 	return err
 }
 
