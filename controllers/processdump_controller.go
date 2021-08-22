@@ -56,7 +56,7 @@ func (r *ProcessDumpReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 	var procdump diagnosticsofficecomv1beta1.ProcessDump
 	var err error
-	if err = r.Client.Get(ctx, req.NamespacedName, &procdump); err != nil {
+	if err = r.Get(ctx, req.NamespacedName, &procdump); err != nil {
 		klog.Error(err, "failed to get ProcessDump")
 		// we'll ignore not-found errors, since they can't be fixed by an immediate
 		// requeue (we'll need to wait for a new notification), and we can get them
@@ -71,7 +71,7 @@ func (r *ProcessDumpReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		Namespace: req.Namespace,
 		Name:      fmt.Sprintf(serviceAccountNaming, req.Namespace),
 	}
-	err = r.Client.Get(ctx, serviceAccountKey, &sa)
+	err = r.Get(ctx, serviceAccountKey, &sa)
 	if errors.IsNotFound(err) {
 		// Need creating one
 		klog.Infof("Create sa %q", serviceAccountKey)

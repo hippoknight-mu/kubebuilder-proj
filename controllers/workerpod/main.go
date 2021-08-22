@@ -72,7 +72,8 @@ func main() {
 	// }
 	
 
-	kubeconfig := "/home/hippo/.kube/config"
+	// kubeconfig := "/home/hippo/.kube/config"
+	kubeconfig := "/home/muqiao/.kube/config"
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	checkErr(err, "")
 	config.GroupVersion = &schema.GroupVersion{Group: "", Version: "v1"} // this is required when using kubectl/cp, don't know why not in exec
@@ -100,6 +101,27 @@ func main() {
 	}
 
 	opts.parseEnv()
+
+// ####################################################################
+	v1beta1.AddToScheme(pdclient.Scheme())
+// 	var pd v1beta1.ProcessDump
+// 	pdKey := types.NamespacedName {Namespace: opts.namespace, Name: opts.procdumpName}
+// 	if err = pdclient.Get(context.Background(), pdKey, &pd); err != nil {
+// 		klog.Error(err.Error())
+// 	}
+
+// 	pd.Status.WorkerPodName = "updated-Pod-Name"
+// 	if err = pdclient.Status().Update(context.Background(), &pd); err != nil {
+// 		klog.Error(err.Error())
+// 	}
+// 	if err = pdclient.Get(context.Background(), pdKey, &pd); err != nil {
+// 		klog.Error(err.Error())
+// 	}
+// 	klog.Infof("$$$$$$$$$$$$$$NEWNAME %s $$$$$$$$$$$$", pd.Status.WorkerPodName)
+// 	klog.Infof("$$$$$$$$$$$$$$ %+v $$$$$$$$$$$$", pd)
+	
+// 	return 
+// // ####################################################################
 
 	// dump steps:
 	// 0. validate pod, detect os (sh or powershell)
@@ -223,7 +245,7 @@ func (o *ExecOptions) getProcessList() {
 		Reason:             "ProcessListRetrieved",
 		Type:               v1beta1.ProcessListRetrieved,
 		Status:             metav1.ConditionTrue,
-		Message:            "==== Process List in Container ====\n" + msg,
+		Message:            "==== Process List in Container from kuberbuilder ====\n" + msg,
 		LastTransitionTime: metav1.NewTime(time.Now()),
 	}
 	o.updateStatus(condition)
@@ -329,7 +351,7 @@ func (o *ExecOptions) execCmd(cmd []string, stdin io.Reader, stdout io.Writer, s
 func (o *ExecOptions) updateStatus(condition v1beta1.ProcessDumpCondition) {
 	var err error
 	var pd v1beta1.ProcessDump
-	o.pdclient.Scheme().AddKnownTypes(v1beta1.GroupVersion, &v1beta1.ProcessDump{}, &v1beta1.ProcessDumpList{})
+	// o.pdclient.Scheme().AddKnownTypes(v1beta1.GroupVersion, &v1beta1.ProcessDump{}, &v1beta1.ProcessDumpList{})
 	pdKey := types.NamespacedName{Namespace: o.namespace, Name: o.procdumpName}
 	if err = o.pdclient.Get(context.Background(), pdKey, &pd); err != nil {
 		klog.Info("Updatestatus failed")
@@ -338,7 +360,7 @@ func (o *ExecOptions) updateStatus(condition v1beta1.ProcessDumpCondition) {
 	pd.Status.Conditions = append(pd.Status.Conditions, condition)
 	klog.Infof("######### %+v", pd)
 	
-	if err = o.pdclient.Status().Update(context.Background(), &pd, &client.UpdateOptions{}); err != nil {
+	if err = o.pdclient.Status().Update(context.Background(), &pd); err != nil {
 		// klog.Infof("%+v", o.pdclient.Scheme())
 		klog.Error(err.Error())
 	}
